@@ -8,6 +8,7 @@ use Cake\ORM\TableRegistry;
 use EmailQueue\Model\Table\EmailQueueTable;
 use Cake\Network\Exception\SocketException;
 use Cake\Mailer\Email;
+use Emojione\Emojione;
 
 class SenderShell extends Shell
 {
@@ -81,6 +82,18 @@ class SenderShell extends Shell
                 if ($transport && $transport->config('additionalParameters')) {
                     $from = key($email->from());
                     $transport->config(['additionalParameters' => "-f $from"]);
+                }
+
+                // emojione
+                if (!empty($e->template_vars)) {
+                    foreach ($e->template_vars as $i => $v) {
+                        $emojione = new Emojione;
+                        $client = $emojione->getClient();
+                        $client->unicodeAlt = true;
+                        $client->imageType = 'svg';
+                        $client->ascii = true;
+                        $e->template_vars[$i] = $client->shortnameToUnicode($v);
+                    }
                 }
 
                 $sent = $email
