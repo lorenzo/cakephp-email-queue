@@ -63,8 +63,8 @@ class SenderShell extends Shell
 
         $count = count($emails);
         foreach ($emails as $e) {
-            $configName = $e->layout === 'default' ? $this->params['config'] : $e->config;
-            $template = $e->layout === 'default' ? $this->params['template'] : $e->template;
+	    $configName = $e->config === 'default' ? $this->params['config'] : $e->config;
+            $template = $e->template === 'default' ? $this->params['template'] : $e->template;
             $layout = $e->layout === 'default' ? $this->params['layout'] : $e->layout;
             $headers = empty($e->headers) ? array() : (array) $e->headers;
             $theme = empty($e->theme) ? '' : (string) $e->theme;
