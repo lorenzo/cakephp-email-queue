@@ -15,7 +15,7 @@ class AddAttachmentsToEmailQueue extends AbstractMigration
         $table = $this->table('email_queue');
         $table->addColumn('attachments', 'text', [
             'default' => null,
-            'null' => false,
+            'null' => true,
         ]);
         $table->update();
     }
