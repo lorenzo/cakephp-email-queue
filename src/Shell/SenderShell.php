@@ -83,9 +83,9 @@ class SenderShell extends Shell
                     $transport->config(['additionalParameters' => "-f $from"]);
                 }
 		
-		if(!empty($e->attachments)){
-		    $email->attachments($e->attachments);
-		}
+                if(!empty($e->attachments)){
+                    $email->attachments($e->attachments);
+                }
 		
                 $sent = $email
                     ->to($e->email)
