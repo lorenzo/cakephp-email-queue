@@ -176,6 +176,7 @@ class EmailQueueTable extends Table
         $schema->columnType('template_vars', $type);
         $schema->columnType('headers', $type);
         $schema->columnType('attachments', $type);
+        
         return $schema;
     }
 }
