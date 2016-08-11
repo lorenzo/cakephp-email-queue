@@ -49,7 +49,7 @@ class PreviewShell extends Shell
 
         $email = new Email($configName);
 	
-        if(!empty($e['attachments'])) {
+        if (!empty($e['attachments'])) {
             $email->attachments($e['attachments']);
         }
 	
