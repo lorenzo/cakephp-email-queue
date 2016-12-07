@@ -51,9 +51,11 @@ class EmailQueueTest extends TestCase
             'template_vars' => array('a' => 'variable', 'some' => 'thing'),
             'sent' => false,
             'locked' => false,
-            'send_tries' => '0',
+            'send_tries' => 0,
             'config' => 'default',
             'headers' => array('X-FOO' => 'bar', 'X-BAZ' => 'thing'),
+            'from_name' => null,
+            'from_email' => null
         );
         $sendAt = new Time($result['send_at']);
         unset($result['id'], $result['created'], $result['modified'], $result['send_at']);

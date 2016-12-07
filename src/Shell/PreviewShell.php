@@ -48,6 +48,11 @@ class PreviewShell extends Shell
         $theme = empty($e['theme']) ? '' : (string) $e['theme'];
 
         $email = new Email($configName);
+	
+        if (!empty($e['attachments'])) {
+            $email->attachments($e['attachments']);
+        }
+	
         $email->transport('Debug')
             ->to($e['email'])
             ->subject($e['subject'])

@@ -19,6 +19,8 @@ class EmailQueueFixture extends TestFixture
     public $fields = array(
         'id' => array('type' => 'uuid', 'null' => false),
         'email' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 100, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+        'from_name' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 100, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+        'from_email' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 100, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
         'subject' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 255, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
         'config' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 30, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
         'template' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 50, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
@@ -44,6 +46,8 @@ class EmailQueueFixture extends TestFixture
         array(
             'id' => 'email-1',
             'email' => 'example@example.com',
+            'from_name' => null,
+            'from_email' => null,
             'subject' => 'Free dealz',
             'config' => 'default',
             'template' => 'default',
@@ -61,6 +65,8 @@ class EmailQueueFixture extends TestFixture
         array(
             'id' => 'email-2',
             'email' => 'example2@example.com',
+            'from_name' => null,
+            'from_email' => null,
             'subject' => 'Free dealz',
             'config' => 'default',
             'template' => 'default',
@@ -78,6 +84,8 @@ class EmailQueueFixture extends TestFixture
         array(
             'id' => 'email-3',
             'email' => 'example3@example.com',
+            'from_name' => null,
+            'from_email' => null,
             'subject' => 'Free dealz',
             'config' => 'default',
             'template' => 'default',
@@ -95,6 +103,8 @@ class EmailQueueFixture extends TestFixture
         array(
             'id' => 'email-4',
             'email' => 'example@example.com',
+            'from_name' => null,
+            'from_email' => null,
             'subject' => 'Free dealz',
             'config' => 'default',
             'template' => 'default',
@@ -112,6 +122,8 @@ class EmailQueueFixture extends TestFixture
         array(
             'id' => 'email-5',
             'email' => 'example@example.com',
+            'from_name' => null,
+            'from_email' => null,
             'subject' => 'Free dealz',
             'config' => 'default',
             'template' => 'default',
@@ -129,6 +141,8 @@ class EmailQueueFixture extends TestFixture
         array(
             'id' => 'email-6',
             'email' => 'example@example.com',
+            'from_name' => null,
+            'from_email' => null,
             'subject' => 'Free dealz',
             'config' => 'default',
             'template' => 'default',

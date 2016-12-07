@@ -15,12 +15,12 @@ class Initial extends AbstractMigration
             ->addColumn('from_name', 'string', [
                 'default' => null,
                 'limit'   => 255,
-                'null'    => false,
+                'null'    => true,
             ])
             ->addColumn('from_email', 'string', [
                 'default' => null,
                 'limit'   => 255,
-                'null'    => false,
+                'null'    => true,
             ])
             ->addColumn('subject', 'string', [
                 'default' => null,

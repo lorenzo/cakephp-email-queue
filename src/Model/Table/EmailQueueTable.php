@@ -61,6 +61,7 @@ class EmailQueueTable extends Table
             'headers' => [],
             'template_vars' => $data,
             'config' => 'default',
+            'attachments' => []
         ];
 
         $email = $options + $defaults;
@@ -174,7 +175,8 @@ class EmailQueueTable extends Table
         $type = Configure::read('EmailQueue.serialization_type') ?: 'email_queue.serialize';
         $schema->columnType('template_vars', $type);
         $schema->columnType('headers', $type);
-
+        $schema->columnType('attachments', $type);
+        
         return $schema;
     }
 }
