@@ -8,6 +8,7 @@ use Cake\ORM\TableRegistry;
 use EmailQueue\Model\Table\EmailQueueTable;
 use Cake\Network\Exception\SocketException;
 use Cake\Mailer\Email;
+use Cake\I18n\I18n;
 
 class SenderShell extends Shell
 {
@@ -68,6 +69,9 @@ class SenderShell extends Shell
             $layout = $e->layout === 'default' ? $this->params['layout'] : $e->layout;
             $headers = empty($e->headers) ? array() : (array) $e->headers;
             $theme = empty($e->theme) ? '' : (string) $e->theme;
+            
+            if (!empty($e->template_vars['language']))
+                I18n::locale($e->template_vars['language']);
 
             try {
                 $email = $this->_newEmail($configName);
