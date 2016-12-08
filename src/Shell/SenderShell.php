@@ -70,8 +70,9 @@ class SenderShell extends Shell
             $headers = empty($e->headers) ? array() : (array) $e->headers;
             $theme = empty($e->theme) ? '' : (string) $e->theme;
             
-            if (!empty($e->template_vars['language']))
-                I18n::locale($e->template_vars['language']);
+            if (!empty($e->template_vars['locale'])) {
+                I18n::locale($e->template_vars['locale']);
+            }
 
             try {
                 $email = $this->_newEmail($configName);
