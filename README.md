@@ -29,6 +29,10 @@ In order to use this plugin, you need to create a database table.
 Required SQL is located at
 
 	# config/Schema/email_queue.sql
+	
+Or run migrations command
+
+    bin/cake migrations migrate -t 20160324054602
 
 Just load it into your database. You are free to change the file to use an integer primary
 key instead of UUIDs.
