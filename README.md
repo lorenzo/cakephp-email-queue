@@ -17,6 +17,17 @@ email templates and watching the result.
 composer require lorenzo/cakephp-email-queue
 ```
 
+The plugin uses Debug email transport, so make sure your email config contain it:
+
+```
+'EmailTransport' => [
+        'Debug' => [
+            'className' => 'Debug'
+        ],
+]
+```
+
+
 ### Enable plugin
 
 ```sh
