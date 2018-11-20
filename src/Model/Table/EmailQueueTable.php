@@ -158,9 +158,11 @@ class EmailQueueTable extends Table
      *
      * @return bool
      */
-    public function fail($id)
+    public function fail($id, $error=Null)
     {
-        $this->updateAll(['send_tries' => new QueryExpression('send_tries + 1')], ['id' => $id]);
+        $this->updateAll(
+            ['send_tries' => new QueryExpression('send_tries + 1'), 'error' => $error],
+            ['id' => $id]);
     }
 
     /**
