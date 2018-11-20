@@ -68,6 +68,7 @@ class SenderShell extends Shell
             $layout = $e->layout === 'default' ? $this->params['layout'] : $e->layout;
             $headers = empty($e->headers) ? array() : (array) $e->headers;
             $theme = empty($e->theme) ? '' : (string) $e->theme;
+            $error_message = Null;
 
             try {
                 $email = $this->_newEmail($configName);
@@ -100,6 +101,7 @@ class SenderShell extends Shell
                     ->send();
             } catch (SocketException $exception) {
                 $this->err($exception->getMessage());
+                $error_message = $exception->getMessage();
                 $sent = false;
             }
 
@@ -107,7 +109,7 @@ class SenderShell extends Shell
                 $emailQueue->success($e->id);
                 $this->out('<success>Email '.$e->id.' was sent</success>');
             } else {
-                $emailQueue->fail($e->id);
+                $emailQueue->fail($e->id, $error_message);
                 $this->out('<error>Email '.$e->id.' was not sent</error>');
             }
         }
