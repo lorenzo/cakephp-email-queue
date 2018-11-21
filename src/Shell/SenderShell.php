@@ -68,7 +68,7 @@ class SenderShell extends Shell
             $layout = $e->layout === 'default' ? $this->params['layout'] : $e->layout;
             $headers = empty($e->headers) ? array() : (array) $e->headers;
             $theme = empty($e->theme) ? '' : (string) $e->theme;
-            $error_message = Null;
+            $error_message = null;
 
             try {
                 $email = $this->_newEmail($configName);
