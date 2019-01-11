@@ -4,6 +4,7 @@ namespace EmailQueue\Test\Model\Table;
 use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
+use DateTime;
 use EmailQueue\EmailQueue;
 use EmailQueue\Model\Table\EmailQueueTable;
 
@@ -51,7 +52,11 @@ class EmailQueueTest extends TestCase
 
         $this->assertEquals(++$count, $this->EmailQueue->find()->count());
 
-        $result = $this->EmailQueue->find()->last()->toArray();
+        $result = $this->EmailQueue->find()
+            ->where(['email' => 'someone@domain.com'])
+            ->first()
+            ->toArray();
+
         $expected = [
             'email' => 'someone@domain.com',
             'subject' => 'Hey!',
@@ -73,7 +78,7 @@ class EmailQueueTest extends TestCase
         $this->assertEquals($expected, $result);
         $this->assertEquals(gmdate('Y-m-d H'), $sendAt->format('Y-m-d H'));
 
-        $date = new Time();
+        $date = new Time('2019-01-11 11:14:15');
         $this->EmailQueue->enqueue(['a@example.com', 'b@example.com'], ['a' => 'b'], ['send_at' => $date, 'subject' => 'Hey!']);
         $this->assertEquals($count + 2, $this->EmailQueue->find()->count());
 
@@ -97,7 +102,10 @@ class EmailQueueTest extends TestCase
             ['subject' => 'Hey', 'send_at' => $date, 'config' => 'other', 'template' => 'custom', 'layout' => 'email']
         );
         $this->assertTrue($result);
-        $email = $this->EmailQueue->find()->last();
+        $email = $this->EmailQueue
+            ->find()
+            ->where(['email' => 'c@example.com'])
+            ->first();
         $this->assertEquals(['a' => 'c'], $email['template_vars']);
         $this->assertEquals($date, $email['send_at']);
         $this->assertEquals('other', $email['config']);
@@ -171,14 +179,17 @@ class EmailQueueTest extends TestCase
 
     public function testProxy()
     {
-        $date = new Time();
+        $date = new DateTime('2019-01-11 11:14:15');
         $result = EmailQueue::enqueue(
             'c@example.com',
             ['a' => 'c'],
             ['subject' => 'Hey', 'send_at' => $date, 'config' => 'other', 'template' => 'custom', 'layout' => 'email']
         );
         $this->assertTrue($result);
-        $email = $this->EmailQueue->find()->last();
+        $email = $this->EmailQueue->find()
+            ->where(['email' => 'c@example.com'])
+            ->first()
+            ->toArray();
         $this->assertEquals(['a' => 'c'], $email['template_vars']);
         $this->assertEquals($date, $email['send_at']);
         $this->assertEquals('other', $email['config']);
