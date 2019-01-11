@@ -1,10 +1,9 @@
 <?php
-
 namespace EmailQueue\Model\Table;
 
 use Cake\Core\Configure;
 use Cake\Database\Expression\QueryExpression;
-use Cake\Database\Schema\Table as Schema;
+use Cake\Database\Schema\TableSchema;
 use Cake\Database\Type;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\Table;
@@ -23,14 +22,17 @@ class EmailQueueTable extends Table
     {
         Type::map('email_queue.json', JsonType::class);
         Type::map('email_queue.serialize', SerializeType::class);
-        $this->addBehavior('Timestamp', [
+        $this->addBehavior(
+            'Timestamp',
+            [
             'events' => [
                 'Model.beforeSave' => [
                     'created' => 'new',
-                    'modified' => 'existing'
+                    'modified' => 'always'
                 ]
             ]
-        ]);
+            ]
+        );
     }
 
     /**
@@ -47,6 +49,7 @@ class EmailQueueTable extends Table
      * - format: Type of template to use (html, text or both)
      * - config : the name of the email config to be used for sending
      *
+     * @throws \Exception any exception raised in transactional callback
      * @return bool
      */
     public function enqueue($to, array $data, array $options = [])
@@ -76,7 +79,7 @@ class EmailQueueTable extends Table
 
         $emails = $this->newEntities($emails);
 
-        return $this->connection()->transactional(function () use ($emails) {
+        return $this->getConnection()->transactional(function () use ($emails) {
             $failure = collection($emails)
                 ->map(function ($email) {
                     return $this->save($email);
@@ -90,18 +93,18 @@ class EmailQueueTable extends Table
     /**
      * Returns a list of queued emails that needs to be sent.
      *
-     * @param int $size, number of unset emails to return
-     *
+     * @param int $size number of unset emails to return
+     * @throws \Exception any exception raised in transactional callback
      * @return array list of unsent emails
      */
     public function getBatch($size = 10)
     {
-        return $this->connection()->transactional(function () use ($size) {
+        return $this->getConnection()->transactional(function () use ($size) {
             $emails = $this->find()
                 ->where([
                     $this->aliasField('sent') => false,
-                    $this->aliasField('send_tries').' <=' => 3,
-                    $this->aliasField('send_at').' <=' => new FrozenTime('now'),
+                    $this->aliasField('send_tries') . ' <=' => 3,
+                    $this->aliasField('send_at') . ' <=' => new FrozenTime('now'),
                     $this->aliasField('locked') => false,
                 ])
                 ->limit($size)
@@ -109,7 +112,7 @@ class EmailQueueTable extends Table
 
             $emails
                 ->extract('id')
-                ->through(function ($ids) {
+                ->through(function (\Cake\Collection\CollectionInterface $ids) {
                     if (!$ids->isEmpty()) {
                         $this->updateAll(['locked' => true], ['id IN' => $ids->toList()]);
                     }
@@ -125,6 +128,8 @@ class EmailQueueTable extends Table
      * Releases locks for all emails in $ids.
      *
      * @param array|Traversable $ids The email ids to unlock
+     *
+     * @return void
      */
     public function releaseLocks($ids)
     {
@@ -133,6 +138,8 @@ class EmailQueueTable extends Table
 
     /**
      * Releases locks for all emails in queue, useful for recovering from crashes.
+     *
+     * @return void
      */
     public function clearLocks()
     {
@@ -142,9 +149,8 @@ class EmailQueueTable extends Table
     /**
      * Marks an email from the queue as sent.
      *
-     * @param string $id, queued email id
-     *
-     * @return bool
+     * @param string $id queued email id
+     * @return void
      */
     public function success($id)
     {
@@ -154,31 +160,36 @@ class EmailQueueTable extends Table
     /**
      * Marks an email from the queue as failed, and increments the number of tries.
      *
-     * @param string $id, queued email id
-     *
-     * @return bool
+     * @param string $id queued email id
+     * @param string $error message
+     * @return void
      */
-    public function fail($id, $error=null)
+    public function fail($id, $error = null)
     {
         $this->updateAll(
-            ['send_tries' => new QueryExpression('send_tries + 1'), 'error' => $error],
-            ['id' => $id]);
+            [
+                'send_tries' => new QueryExpression('send_tries + 1'),
+                'error' => $error
+            ],
+            [
+                'id' => $id
+            ]
+        );
     }
 
     /**
      * Sets the column type for template_vars and headers to json.
      *
-     * @param Schema $schema The table description
-     *
-     * @return Schema
+     * @param TableSchema $schema The table description
+     * @return TableSchema
      */
-    protected function _initializeSchema(Schema $schema)
+    protected function _initializeSchema(TableSchema $schema)
     {
         $type = Configure::read('EmailQueue.serialization_type') ?: 'email_queue.serialize';
-        $schema->columnType('template_vars', $type);
-        $schema->columnType('headers', $type);
-        $schema->columnType('attachments', $type);
-        
+        $schema->setColumnType('template_vars', $type);
+        $schema->setColumnType('headers', $type);
+        $schema->setColumnType('attachments', $type);
+
         return $schema;
     }
 }

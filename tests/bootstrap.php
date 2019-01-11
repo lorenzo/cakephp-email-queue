@@ -1,13 +1,13 @@
 <?php
-
-use Cake\Mailer\Email;
 use Cake\Core\Configure;
+use Cake\Mailer\Email;
+use Cake\Mailer\TransportFactory;
 
 $findRoot = function ($root) {
     do {
         $lastRoot = $root;
         $root = dirname($root);
-        if (is_dir($root.'/vendor/cakephp/cakephp')) {
+        if (is_dir($root . '/vendor/cakephp/cakephp')) {
             return $root;
         }
     } while ($root !== $lastRoot);
@@ -18,10 +18,12 @@ $root = $findRoot(__FILE__);
 unset($findRoot);
 chdir($root);
 
-require $root.'/vendor/cakephp/cakephp/tests/bootstrap.php';
+require $root . '/vendor/cakephp/cakephp/tests/bootstrap.php';
 
 Configure::write('EmailQueue.serialization_type', 'email_queue.json');
-Email::configTransport(['default' => ['className' => 'Mail', 'additionalParameters' => true]]);
-Email::config([
+TransportFactory::setConfig(['default' => ['className' => 'Mail', 'additionalParameters' => true]]);
+Email::setConfig(
+    [
     'default' => ['transport' => 'default', 'from' => 'foo@bar.com'],
-]);
+    ]
+);

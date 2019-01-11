@@ -1,12 +1,10 @@
 <?php
-
 namespace EmailQueue;
 
 use Cake\ORM\TableRegistry;
 
 class EmailQueue
 {
-
     /**
      * Stores a new email message in the queue.
      *
@@ -27,7 +25,8 @@ class EmailQueue
      */
     public static function enqueue($to, array $data, array $options = [])
     {
-        return TableRegistry::get('EmailQueue.EmailQueue')
+        return TableRegistry::getTableLocator()
+            ->get('EmailQueue.EmailQueue')
             ->enqueue($to, $data, $options);
     }
 }

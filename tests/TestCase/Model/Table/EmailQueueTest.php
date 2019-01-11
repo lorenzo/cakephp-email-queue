@@ -1,5 +1,4 @@
 <?php
-
 namespace EmailQueue\Test\Model\Table;
 
 use Cake\I18n\Time;
@@ -10,13 +9,19 @@ use EmailQueue\Model\Table\EmailQueueTable;
 
 class EmailQueueTest extends TestCase
 {
+
+    /**
+     * @var EmailQueueTable
+     */
+    protected $EmailQueue;
+
     /**
      * Fixtures.
      *
      * @var array
      */
     public $fixtures = [
-        'plugin.email_queue.email_queue',
+        'plugin.EmailQueue.EmailQueue',
     ];
 
     /**
@@ -25,7 +30,8 @@ class EmailQueueTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->EmailQueue = TableRegistry::get('EmailQueue', ['className' => EmailQueueTable::class]);
+        $this->EmailQueue = TableRegistry::getTableLocator()
+            ->get('EmailQueue', ['className' => EmailQueueTable::class]);
     }
 
     /**
@@ -34,60 +40,65 @@ class EmailQueueTest extends TestCase
     public function testEnqueue()
     {
         $count = $this->EmailQueue->find()->count();
-        $this->EmailQueue->enqueue('someone@domain.com', array('a' => 'variable', 'some' => 'thing'), array(
+        $this->EmailQueue->enqueue(
+            'someone@domain.com',
+            ['a' => 'variable', 'some' => 'thing'],
+            [
             'subject' => 'Hey!',
             'headers' => ['X-FOO' => 'bar', 'X-BAZ' => 'thing'],
-        ));
+            ]
+        );
 
         $this->assertEquals(++$count, $this->EmailQueue->find()->count());
 
         $result = $this->EmailQueue->find()->last()->toArray();
-        $expected = array(
+        $expected = [
             'email' => 'someone@domain.com',
             'subject' => 'Hey!',
             'template' => 'default',
             'layout' => 'default',
             'format' => 'both',
-            'template_vars' => array('a' => 'variable', 'some' => 'thing'),
+            'template_vars' => ['a' => 'variable', 'some' => 'thing'],
             'sent' => false,
             'locked' => false,
             'send_tries' => 0,
             'config' => 'default',
-            'headers' => array('X-FOO' => 'bar', 'X-BAZ' => 'thing'),
+            'headers' => ['X-FOO' => 'bar', 'X-BAZ' => 'thing'],
+            'error' => null,
             'from_name' => null,
             'from_email' => null
-        );
+        ];
         $sendAt = new Time($result['send_at']);
         unset($result['id'], $result['created'], $result['modified'], $result['send_at']);
         $this->assertEquals($expected, $result);
         $this->assertEquals(gmdate('Y-m-d H'), $sendAt->format('Y-m-d H'));
 
         $date = new Time();
-        $this->EmailQueue->enqueue(array('a@example.com', 'b@example.com'), array('a' => 'b'), array('send_at' => $date, 'subject' => 'Hey!'));
+        $this->EmailQueue->enqueue(['a@example.com', 'b@example.com'], ['a' => 'b'], ['send_at' => $date, 'subject' => 'Hey!']);
         $this->assertEquals($count + 2, $this->EmailQueue->find()->count());
 
         $email = $this->EmailQueue
             ->find()
-            ->where(array('email' => 'a@example.com'))
+            ->where(['email' => 'a@example.com'])
             ->first();
-        $this->assertEquals(array('a' => 'b'), $email['template_vars']);
+        $this->assertEquals(['a' => 'b'], $email['template_vars']);
         $this->assertEquals($date, $email['send_at']);
 
         $email = $this->EmailQueue
             ->find()
-            ->where(array('email' => 'b@example.com'))
+            ->where(['email' => 'b@example.com'])
             ->first();
-        $this->assertEquals(array('a' => 'b'), $email['template_vars']);
+        $this->assertEquals(['a' => 'b'], $email['template_vars']);
         $this->assertEquals($date, $email['send_at']);
 
-        $this->EmailQueue->enqueue(
+        $result = $this->EmailQueue->enqueue(
             'c@example.com',
-            array('a' => 'c'),
-            array('subject' => 'Hey', 'send_at' => $date, 'config' => 'other', 'template' => 'custom', 'layout' => 'email')
+            ['a' => 'c'],
+            ['subject' => 'Hey', 'send_at' => $date, 'config' => 'other', 'template' => 'custom', 'layout' => 'email']
         );
-
+        $this->assertTrue($result);
         $email = $this->EmailQueue->find()->last();
-        $this->assertEquals(array('a' => 'c'), $email['template_vars']);
+        $this->assertEquals(['a' => 'c'], $email['template_vars']);
         $this->assertEquals($date, $email['send_at']);
         $this->assertEquals('other', $email['config']);
         $this->assertEquals('custom', $email['template']);
@@ -100,16 +111,16 @@ class EmailQueueTest extends TestCase
     public function testGetBatch()
     {
         $batch = $this->EmailQueue->getBatch();
-        $this->assertEquals(array('email-1', 'email-2', 'email-3'), collection($batch)->extract('id')->toList());
+        $this->assertEquals(['email-1', 'email-2', 'email-3'], collection($batch)->extract('id')->toList());
 
         //At this point previous batch should be locked and next call should return an empty set
         $batch = $this->EmailQueue->getBatch();
         $this->assertEmpty($batch);
 
         //Let's change send_at date for email-6 to get it on a batch
-        $this->EmailQueue->updateAll(array('send_at' => '2011-01-01 00:00'), ['id' => 'email-6']);
+        $this->EmailQueue->updateAll(['send_at' => '2011-01-01 00:00'], ['id' => 'email-6']);
         $batch = $this->EmailQueue->getBatch();
-        $this->assertEquals(array('email-6'), collection($batch)->extract('id')->toList());
+        $this->assertEquals(['email-6'], collection($batch)->extract('id')->toList());
     }
 
     /**
@@ -134,7 +145,7 @@ class EmailQueueTest extends TestCase
         $this->assertEmpty($this->EmailQueue->getBatch());
         $this->EmailQueue->clearLocks();
         $batch = $this->EmailQueue->getBatch();
-        $this->assertEquals(array('email-1', 'email-2', 'email-3', 'email-5'), collection($batch)->extract('id')->toList());
+        $this->assertEquals(['email-1', 'email-2', 'email-3', 'email-5'], collection($batch)->extract('id')->toList());
     }
 
     /**
@@ -161,14 +172,14 @@ class EmailQueueTest extends TestCase
     public function testProxy()
     {
         $date = new Time();
-        EmailQueue::enqueue(
+        $result = EmailQueue::enqueue(
             'c@example.com',
             ['a' => 'c'],
             ['subject' => 'Hey', 'send_at' => $date, 'config' => 'other', 'template' => 'custom', 'layout' => 'email']
         );
-
+        $this->assertTrue($result);
         $email = $this->EmailQueue->find()->last();
-        $this->assertEquals(array('a' => 'c'), $email['template_vars']);
+        $this->assertEquals(['a' => 'c'], $email['template_vars']);
         $this->assertEquals($date, $email['send_at']);
         $this->assertEquals('other', $email['config']);
         $this->assertEquals('custom', $email['template']);

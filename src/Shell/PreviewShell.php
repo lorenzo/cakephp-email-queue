@@ -1,15 +1,19 @@
 <?php
-
 namespace EmailQueue\Shell;
 
 use Cake\Console\Shell;
 use Cake\Core\Configure;
+use Cake\Mailer\Email;
 use Cake\ORM\TableRegistry;
 use EmailQueue\Model\Table\EmailQueueTable;
-use Cake\Mailer\Email;
 
 class PreviewShell extends Shell
 {
+    /**
+     * Main
+     *
+     * @return bool|int|null|void
+     */
     public function main()
     {
         Configure::write('App.baseUrl', '/');
@@ -34,35 +38,44 @@ class PreviewShell extends Shell
                 $this->in('Hit a key to continue');
                 $this->clear();
             }
-            $this->out('Email :'.$email['EmailQueue']['id']);
+            $this->out('Email :' . $email['EmailQueue']['id']);
             $this->preview($email);
         }
     }
 
+    /**
+     * Preview email
+     *
+     * @param array $e email data
+     * @return void
+     */
     public function preview($e)
     {
         $configName = $e['config'];
         $template = $e['template'];
         $layout = $e['layout'];
-        $headers = empty($e['headers']) ? [] : (array) $e['headers'];
-        $theme = empty($e['theme']) ? '' : (string) $e['theme'];
+        $headers = empty($e['headers']) ? [] : (array)$e['headers'];
+        $theme = empty($e['theme']) ? '' : (string)$e['theme'];
 
         $email = new Email($configName);
-	
+
         if (!empty($e['attachments'])) {
-            $email->attachments($e['attachments']);
+            $email->setAttachments($e['attachments']);
         }
-	
-        $email->transport('Debug')
-            ->to($e['email'])
-            ->subject($e['subject'])
-            ->template($template, $layout)
-            ->emailFormat($e['format'])
+
+        $email->setTransport('Debug')
+            ->setTo($e['email'])
+            ->setSubject($e['subject'])
+            ->setEmailFormat($e['format'])
             ->addHeaders($headers)
-            ->theme($theme)
-            ->messageId(false)
-            ->returnPath($email->from())
-            ->viewVars($e['template_vars']);
+            ->setMessageId(false)
+            ->setReturnPath($email->getFrom())
+            ->setViewVars($e['template_vars']);
+
+        $email->viewBuilder()
+            ->setTheme($theme)
+            ->setTemplate($template)
+            ->setLayout($layout);
 
         $return = $email->send();
 

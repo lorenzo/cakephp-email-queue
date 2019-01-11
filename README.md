@@ -9,7 +9,7 @@ email templates and watching the result.
 
 ## Requirements ##
 
-* CakePHP 3.x
+* CakePHP 3.7
 
 ## Installation ##
 
@@ -26,7 +26,6 @@ The plugin uses Debug email transport, so make sure your email config contain it
         ],
 ]
 ```
-
 
 ### Enable plugin
 
@@ -87,3 +86,16 @@ read available options
 
 You can configure this command to be run under a cron or any other tool
 you wish to use.
+
+# Contributing
+
+## Run the tests
+
+```
+./vendor/bin/phpunit tests/
+```
+
+## Check style
+```
+./vendor/bin/phpcs ./src ./tests/ --standard=vendor/cakephp/cakephp-codesniffer/CakePHP
+```
