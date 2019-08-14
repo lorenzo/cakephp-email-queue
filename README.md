@@ -63,7 +63,7 @@ and queue a new one by storing the correct data:
 - Third arguments is an array of options, possible options are
  * `subject`: Email's subject
  * `send_at`: date time sting representing the time this email should be sent at (in UTC)
- * `template`:  the name of the element to use as template for the email message
+ * `template`:  the name of the element to use as template for the email message. (maximum supported length is 100 chars)
  * `layout`: the name of the layout to be used to wrap email message
  * `format`: Type of template to use (html, text or both)
  * `headers`: A key-value list of headers to send in the email

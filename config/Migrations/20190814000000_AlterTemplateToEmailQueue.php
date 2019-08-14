@@ -16,7 +16,7 @@ class AlterTemplateToEmailQueue extends AbstractMigration
     {
         $this->table('email_queue')
             ->changeColumn('template', 'string', [
-                'limit' => 255,
+                'limit' => 100,
             ])
             ->update();
     }
