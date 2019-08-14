@@ -9,12 +9,15 @@ use Cake\I18n\FrozenTime;
 use Cake\ORM\Table;
 use EmailQueue\Database\Type\JsonType;
 use EmailQueue\Database\Type\SerializeType;
+use LengthException;
 
 /**
  * EmailQueue Table.
  */
 class EmailQueueTable extends Table
 {
+    const MAX_TEMPLATE_LENGTH = 100;
+
     /**
      * {@inheritdoc}
      */
@@ -50,10 +53,15 @@ class EmailQueueTable extends Table
      * - config : the name of the email config to be used for sending
      *
      * @throws \Exception any exception raised in transactional callback
+     * @throws LengthException If `template` option length is greater than maximum allowed length
      * @return bool
      */
     public function enqueue($to, array $data, array $options = [])
     {
+        if (strlen($options['template']) > self::MAX_TEMPLATE_LENGTH) {
+            throw new LengthException('`template` length must be less or equal to ' . self::MAX_TEMPLATE_LENGTH);
+        }
+
         $defaults = [
             'subject' => '',
             'send_at' => new FrozenTime('now'),
