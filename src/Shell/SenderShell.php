@@ -1,9 +1,10 @@
 <?php
 namespace EmailQueue\Shell;
 
+use Cake\Console\ConsoleOptionParser;
 use Cake\Console\Shell;
 use Cake\Core\Configure;
-use Cake\Mailer\Email;
+use Cake\Mailer\Mailer;
 use Cake\Network\Exception\SocketException;
 use Cake\ORM\TableRegistry;
 use EmailQueue\Model\Table\EmailQueueTable;
@@ -18,7 +19,7 @@ class SenderShell extends Shell
      * @return \Cake\Console\ConsoleOptionParser
      * @link https://book.cakephp.org/3.0/en/console-and-shells.html#configuring-options-and-generating-help
      */
-    public function getOptionParser()
+    public function getOptionParser(): ConsoleOptionParser
     {
         $parser = parent::getOptionParser();
         $parser
@@ -78,7 +79,7 @@ class SenderShell extends Shell
      *
      * @return void
      */
-    public function main()
+    public function main(): void
     {
         if ($this->params['stagger']) {
             sleep(rand(0, $this->params['stagger']));
@@ -130,7 +131,7 @@ class SenderShell extends Shell
                     ->setTheme($theme)
                     ->setTemplate($template);
 
-                $email->send();
+                $email->deliver();
             } catch (SocketException $exception) {
                 $this->err($exception->getMessage());
                 $errorMessage = $exception->getMessage();
@@ -156,7 +157,7 @@ class SenderShell extends Shell
      *
      * @return void
      */
-    public function clearLocks()
+    public function clearLocks(): void
     {
         TableRegistry::getTableLocator()
             ->get('EmailQueue', ['className' => EmailQueueTable::class])
@@ -166,11 +167,11 @@ class SenderShell extends Shell
     /**
      * Returns a new instance of CakeEmail.
      *
-     * @param array $config array of configs, or string to load configs from app.php
-     * @return Email
+     * @param array|string $config array of configs, or string to load configs from app.php
+     * @return \Cake\Mailer\Mailer
      */
-    protected function _newEmail($config)
+    protected function _newEmail($config): Mailer
     {
-        return new Email($config);
+        return new Mailer($config);
     }
 }

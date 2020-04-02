@@ -3,7 +3,7 @@ namespace EmailQueue\Shell;
 
 use Cake\Console\Shell;
 use Cake\Core\Configure;
-use Cake\Mailer\Email;
+use Cake\Mailer\Mailer;
 use Cake\ORM\TableRegistry;
 use EmailQueue\Model\Table\EmailQueueTable;
 
@@ -23,7 +23,7 @@ class PreviewShell extends Shell
             $conditions['id IN'] = $this->args;
         }
 
-        $emailQueue = TableRegistry::get('EmailQueue', ['className' => EmailQueueTable::class]);
+        $emailQueue = TableRegistry::getTableLocator()->get('EmailQueue', ['className' => EmailQueueTable::class]);
         $emails = $emailQueue->find()->where($conditions)->toList();
 
         if (!$emails) {
@@ -57,7 +57,7 @@ class PreviewShell extends Shell
         $headers = empty($e['headers']) ? [] : (array)$e['headers'];
         $theme = empty($e['theme']) ? '' : (string)$e['theme'];
 
-        $email = new Email($configName);
+        $email = new Mailer($configName);
 
         if (!empty($e['attachments'])) {
             $email->setAttachments($e['attachments']);
@@ -77,7 +77,7 @@ class PreviewShell extends Shell
             ->setTemplate($template)
             ->setLayout($layout);
 
-        $return = $email->send();
+        $return = $email->deliver();
 
         $this->out('Content:');
         $this->hr();
@@ -91,6 +91,6 @@ class PreviewShell extends Shell
         $this->hr();
         debug($e['template_vars']);
         $this->hr();
-        $this->out();
+        $this->out('');
     }
 }
