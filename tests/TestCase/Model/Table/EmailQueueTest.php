@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace EmailQueue\Test\Model\Table;
 
 use Cake\I18n\Time;
@@ -10,7 +12,6 @@ use EmailQueue\Model\Table\EmailQueueTable;
 
 class EmailQueueTest extends TestCase
 {
-
     /**
      * @var EmailQueueTable
      */
@@ -28,7 +29,7 @@ class EmailQueueTest extends TestCase
     /**
      * setUp method.
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->EmailQueue = TableRegistry::getTableLocator()
@@ -71,7 +72,7 @@ class EmailQueueTest extends TestCase
             'headers' => ['X-FOO' => 'bar', 'X-BAZ' => 'thing'],
             'error' => null,
             'from_name' => null,
-            'from_email' => null
+            'from_email' => null,
         ];
         $sendAt = new Time($result['send_at']);
         unset($result['id'], $result['created'], $result['modified'], $result['send_at']);

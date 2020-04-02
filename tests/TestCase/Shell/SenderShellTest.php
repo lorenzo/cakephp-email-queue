@@ -1,17 +1,18 @@
 <?php
+declare(strict_types=1);
+
 namespace EmailQueue\Test\Shell;
 
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOutput;
-use Cake\Mailer\Email;
+use Cake\Mailer\Transport\MailTransport;
 use Cake\Network\Exception\SocketException;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\ConsoleIntegrationTestTrait;
 use Cake\TestSuite\TestCase;
-use Cake\View\ViewBuilder;
 use EmailQueue\Model\Table\EmailQueueTable;
 use EmailQueue\Shell\SenderShell;
-use PHPUnit\Framework\MockObject\MockObject;
+use TestApp\Mailer\TestMailer;
 
 /**
  * SenderShell Test Case.
@@ -52,7 +53,7 @@ class SenderShellTest extends TestCase
     /**
      * setUp method.
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->out = new ConsoleOutput();
@@ -79,66 +80,21 @@ class SenderShellTest extends TestCase
             ->get('EmailQueue', ['className' => EmailQueueTable::class]);
     }
 
+    public function tearDown(): void
+    {
+        parent::tearDown();
+        unset($this->Sender);
+    }
+
     public function testMainAllWin()
     {
-        $viewBuilder = $this->getMockBuilder(ViewBuilder::class)
-            ->setMethods(['setTemplate', 'setLayout', 'setTheme'])
-            ->getMock();
-
-        $email = $this->getMockBuilder(Email::class)
-            ->setMethods(['setTo', 'setViewVars', 'send', 'setSubject', 'setEmailFormat', 'viewBuilder'])
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $email->method('viewBuilder')
-            ->willReturn($viewBuilder);
-
-        $this->Sender->params['template'] = 'other';
-        $this->Sender->params['layout'] = 'custom';
-        $this->Sender->params['config'] = 'something';
+        $email = new TestMailer();
+        $email->setTo('you@example.com')
+            ->setSubject('About');
 
         $this->Sender->expects($this->exactly(3))
             ->method('_newEmail')
-            ->with('something')
             ->will($this->returnValue($email));
-
-        $email->expects($this->exactly(3))
-            ->method('send')
-            ->will($this->returnValue(true));
-
-        $email->expects($this->exactly(3))
-            ->method('setTo')
-            ->will($this->returnSelf());
-
-        $email->expects($this->exactly(3))
-            ->method('setSubject')
-            ->with('Free dealz')
-            ->will($this->returnSelf());
-
-        $email->expects($this->exactly(3))
-            ->method('setEmailFormat')
-            ->with('both')
-            ->will($this->returnSelf());
-
-        $email->expects($this->exactly(3))
-            ->method('setViewVars')
-            ->with(['a' => 1, 'b' => 2])
-            ->will($this->returnSelf());
-
-        $viewBuilder->expects($this->exactly(3))
-            ->method('setLayout')
-            ->with('custom')
-            ->will($this->returnSelf());
-
-        $viewBuilder->expects($this->exactly(3))
-            ->method('setTheme')
-            ->with('')
-            ->will($this->returnSelf());
-
-        $viewBuilder->expects($this->exactly(3))
-            ->method('setTemplate')
-            ->with('other')
-            ->will($this->returnSelf());
 
         $this->Sender->main();
 
@@ -162,59 +118,23 @@ class SenderShellTest extends TestCase
 
     public function testMainAllFail()
     {
-        $viewBuilder = $this->getMockBuilder(ViewBuilder::class)
-            ->setMethods(['setTemplate', 'setLayout', 'setTheme'])
+        $transport = $this->getMockBuilder(MailTransport::class)
+            ->onlyMethods(['send'])
             ->getMock();
 
-        $email = $this->getMockBuilder(Email::class)
-            ->setMethods(['setTo', 'setViewVars', 'send', 'setSubject', 'setEmailFormat', 'viewBuilder'])
-            ->disableOriginalConstructor()
-            ->getMock();
+        $transport->expects($this->exactly(3))
+            ->method('send')
+            ->will($this->throwException(new SocketException('fail')));
 
-        $email->method('viewBuilder')
-            ->willReturn($viewBuilder);
+        $email = new TestMailer();
+        $email->setTo('you@example.com')
+            ->setSubject('About')
+            ->setTransport($transport);
 
         $this->Sender->expects($this->exactly(3))
             ->method('_newEmail')
             ->with('default')
             ->will($this->returnValue($email));
-
-        $email->expects($this->exactly(3))
-            ->method('send')
-            ->will($this->throwException(new SocketException('fail')));
-
-        $email->expects($this->exactly(3))
-            ->method('setTo')
-            ->will($this->returnSelf());
-
-        $email->expects($this->exactly(3))
-            ->method('setSubject')
-            ->with('Free dealz')
-            ->will($this->returnSelf());
-
-        $email->expects($this->exactly(3))
-            ->method('setEmailFormat')
-            ->with('both')
-            ->will($this->returnSelf());
-
-        $email->expects($this->exactly(3))->method('setViewVars')
-            ->with(['a' => 1, 'b' => 2])
-            ->will($this->returnSelf());
-
-        $viewBuilder->expects($this->exactly(3))
-            ->method('setLayout')
-            ->with('default')
-            ->will($this->returnSelf());
-
-        $viewBuilder->expects($this->exactly(3))
-            ->method('setTemplate')
-            ->with('default')
-            ->will($this->returnSelf());
-
-        $viewBuilder->expects($this->exactly(3))
-            ->method('setTheme')
-            ->with('')
-            ->will($this->returnSelf());
 
         $this->Sender->main();
 
