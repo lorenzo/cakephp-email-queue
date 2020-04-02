@@ -9,7 +9,7 @@ email templates and watching the result.
 
 ## Requirements ##
 
-* CakePHP 3.7
+* CakePHP 4.x
 
 ## Installation ##
 
