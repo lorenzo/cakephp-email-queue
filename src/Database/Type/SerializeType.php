@@ -1,22 +1,25 @@
 <?php
+declare(strict_types=1);
+
 namespace EmailQueue\Database\Type;
 
-use Cake\Database\Driver;
-use Cake\Database\Type\StringType;
+use Cake\Database\DriverInterface;
+use Cake\Database\Type\BaseType;
+use Cake\Database\Type\OptionalConvertInterface;
 
-class SerializeType extends StringType
+class SerializeType extends BaseType implements OptionalConvertInterface
 {
     /**
      * Creates a PHP value from a stored representation
      *
      * @param mixed $value to unserialize
-     * @param Driver $driver database driver
+     * @param \Cake\Database\DriverInterface $driver database driver
      * @return mixed|null|string|void
      */
-    public function toPHP($value, Driver $driver)
+    public function toPHP($value, DriverInterface $driver)
     {
         if ($value === null) {
-            return;
+            return null;
         }
 
         return unserialize($value);
@@ -26,11 +29,19 @@ class SerializeType extends StringType
      * Generates a storable representation of a value
      *
      * @param mixed $value to serialize
-     * @param Driver $driver database driver
+     * @param \Cake\Database\Driver $driver database driver
      * @return null|string
      */
-    public function toDatabase($value, Driver $driver)
+    public function toDatabase($value, DriverInterface $driver): ?string
     {
+        if ($value === null || is_string($value)) {
+            return $value;
+        }
+
+        if (is_object($value) && method_exists($value, '__toString')) {
+            return $value->__toString();
+        }
+
         return serialize($value);
     }
 
@@ -50,7 +61,7 @@ class SerializeType extends StringType
      *
      * @return bool always true
      */
-    public function requiresToPhpCast()
+    public function requiresToPhpCast(): bool
     {
         return true;
     }
