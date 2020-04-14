@@ -103,11 +103,11 @@ class EmailQueueTable extends Table
     /**
      * Returns a list of queued emails that needs to be sent.
      *
-     * @param int $size number of unset emails to return
+     * @param int|string $size number of unset emails to return
      * @throws \Exception any exception raised in transactional callback
      * @return array list of unsent emails
      */
-    public function getBatch(int $size = 10): array
+    public function getBatch($size = 10): array
     {
         return $this->getConnection()->transactional(function () use ($size) {
             $emails = $this->find()
