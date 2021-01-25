@@ -40,7 +40,7 @@ class PreviewShell extends Shell
                 $this->in('Hit a key to continue');
                 $this->clear();
             }
-            $this->out('Email :' . $email['EmailQueue']['id']);
+            $this->out('Email :' . $email->id);
             $this->preview($email);
         }
     }
