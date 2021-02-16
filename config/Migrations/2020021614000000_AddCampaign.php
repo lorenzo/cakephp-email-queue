@@ -3,7 +3,7 @@
 use Migrations\AbstractMigration;
 use Phinx\Db\Adapter\MysqlAdapter;
 
-class AlterTemplateToEmailQueue extends AbstractMigration
+class AddCampaign extends AbstractMigration
 {
   /**
    * Up Method
@@ -16,7 +16,7 @@ class AlterTemplateToEmailQueue extends AbstractMigration
   public function up()
   {
     $this->table('email_queue')
-      ->addColumn('campaign_id', 'int')
+      ->addColumn('campaign_id', 'integer')
       ->update();
   }
 
@@ -31,7 +31,7 @@ class AlterTemplateToEmailQueue extends AbstractMigration
   public function down()
   {
     $this->table('email_queue')
-      ->removeColumn('campaign_id', 'int')
+      ->removeColumn('campaign_id', 'integer')
       ->update();
   }
 }
