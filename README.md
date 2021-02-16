@@ -71,6 +71,9 @@ and queue a new one by storing the correct data:
  * `config`: the name of the email config to be used for sending
  * `from_name`: String with from name. Must be supplied together with `from_email`.
  * `from_email`: String with from email. Must be supplied together with `from_name`.
+ * `campaign_id`: Id of your email campaign, useful if you want to check the delivery status via application
+
+
 
 ### Previewing emails
 
