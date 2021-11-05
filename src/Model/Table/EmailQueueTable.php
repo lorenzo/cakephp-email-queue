@@ -48,6 +48,8 @@ class EmailQueueTable extends Table
      * @param array $options list of options for email sending. Possible keys:
      *
      * - subject : Email's subject
+     * - cc: array of carbon copy
+     * - bcc: array of blind carbon copy
      * - send_at : date time sting representing the time this email should be sent at (in UTC)
      * - template :  the name of the element to use as template for the email message
      * - layout : the name of the layout to be used to wrap email message
@@ -66,6 +68,8 @@ class EmailQueueTable extends Table
 
         $defaults = [
             'subject' => '',
+            'cc' => '',
+            'bcc' => '',
             'send_at' => new FrozenTime('now'),
             'template' => 'default',
             'layout' => 'default',
@@ -199,6 +203,8 @@ class EmailQueueTable extends Table
         $schema->setColumnType('template_vars', $type);
         $schema->setColumnType('headers', $type);
         $schema->setColumnType('attachments', $type);
+        $schema->setColumnType('cc', $type);
+        $schema->setColumnType('bcc', $type);
 
         return $schema;
     }

@@ -22,7 +22,12 @@ class SerializeType extends BaseType implements OptionalConvertInterface
             return null;
         }
 
-        return unserialize($value);
+        try {
+            return unserialize($value);
+        } catch (\Exception $e) {
+            // return value, if the value isn't serialized
+            return $value;
+        }
     }
 
     /**

@@ -73,6 +73,8 @@ class EmailQueueTest extends TestCase
             'error' => null,
             'from_name' => null,
             'from_email' => null,
+            'cc' => '',
+            'bcc' => ''
         ];
         $sendAt = new Time($result['send_at']);
         unset($result['id'], $result['created'], $result['modified'], $result['send_at']);
@@ -196,5 +198,29 @@ class EmailQueueTest extends TestCase
         $this->assertEquals('other', $email['config']);
         $this->assertEquals('custom', $email['template']);
         $this->assertEquals('email', $email['layout']);
+    }
+
+    /**
+     * Test cc and bcc with string and array
+     */
+    public function testCCAndBcc()
+    {
+        $cc = ['cc@example.com', 'cc2@example.com'];
+        $bcc = 'bcc@example.com';
+
+        $result = EmailQueue::enqueue(
+            'd@example.com',
+            ['a' => 'c'],
+            ['subject' => 'Hey', 'cc' => $cc, 'bcc' => $bcc, 'template' => 'custom', 'layout' => 'email']
+        );
+        $this->assertTrue($result);
+        $email = $this->EmailQueue->find()
+            ->where(['email' => 'd@example.com'])
+            ->first()
+            ->toArray();
+
+        $this->assertEquals($cc[0], $email['cc'][0]);
+        $this->assertEquals($cc[1], $email['cc'][1]);
+        $this->assertEquals($bcc, $email['bcc']);
     }
 }
