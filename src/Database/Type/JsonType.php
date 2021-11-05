@@ -18,11 +18,7 @@ class JsonType extends BaseType implements OptionalConvertInterface
      */
     public function toPHP($value, DriverInterface $driver)
     {
-        if ($value === null) {
-            return;
-        }
-
-        return json_decode($value, true);
+        return $this->decodeJson($value);
     }
 
     /**
@@ -33,11 +29,7 @@ class JsonType extends BaseType implements OptionalConvertInterface
      */
     public function marshal($value)
     {
-        if (is_array($value) || $value === null) {
-            return $value;
-        }
-
-        return json_decode($value, true);
+        return $this->decodeJson($value);
     }
 
     /**
@@ -60,5 +52,28 @@ class JsonType extends BaseType implements OptionalConvertInterface
     public function requiresToPhpCast(): bool
     {
         return true;
+    }
+
+    /**
+     * Returns the given value as an array (if it is json or already an array)
+     * or as a string (if it is already a string)
+     *
+     * @param array|string|null $value json string, array or string to decode
+     * @return array|string|null  depending on the input, see description
+     */
+    private function decodeJson($value)
+    {
+        if (is_array($value) || $value === null) {
+            return $value;
+        }
+
+        $jsonDecode = json_decode($value, true);
+
+        // check, if the value is null after json_decode to handle plain strings
+        if ($jsonDecode === null) {
+            return $value;
+        }
+
+        return $jsonDecode;
     }
 }

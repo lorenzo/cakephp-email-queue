@@ -61,6 +61,16 @@ class PreviewShell extends Shell
 
         $email = new Mailer($configName);
 
+        // set cc
+        if (!empty($e['cc'])) {
+            $email->setCC($e['cc']);
+        }
+
+        // set bcc
+        if (!empty($e['bcc'])) {
+            $email->setBcc($e['bcc']);
+        }
+
         if (!empty($e['attachments'])) {
             $email->setAttachments($e['attachments']);
         }

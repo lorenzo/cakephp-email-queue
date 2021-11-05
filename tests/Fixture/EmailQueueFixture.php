@@ -19,6 +19,8 @@ class EmailQueueFixture extends TestFixture
     public $fields = [
         'id' => ['type' => 'uuid', 'null' => false],
         'email' => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 100, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'cc' => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 129, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'bcc' => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 129, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'from_name' => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 100, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'from_email' => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 100, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'subject' => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 255, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],

@@ -15,6 +15,8 @@ class EmailQueue
      * @param array $options list of options for email sending. Possible keys:
      *
      * - subject : Email's subject
+     * - cc: array of carbon copy
+     * - bcc: array of blind carbon copy
      * - send_at : date time sting representing the time this email should be sent at (in UTC)
      * - template :  the name of the element to use as template for the email message
      * - layout : the name of the layout to be used to wrap email message
@@ -22,7 +24,6 @@ class EmailQueue
      * - headers: Key => Value list of extra headers for the email
      * - theme: The View Theme to find the email templates
      * - config : the name of the email config to be used for sending
-     *
      * @return bool
      */
     public static function enqueue($to, array $data, array $options = [])

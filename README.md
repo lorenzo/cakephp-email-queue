@@ -62,6 +62,8 @@ and queue a new one by storing the correct data:
   email template
 - Third arguments is an array of options, possible options are
  * `subject`: Email's subject
+ * `cc`: Email's carbon copy (string with email, Array with email as key, name as value or email as value (without name))
+ * `bcc`: Email's blind carbon copy (string with email, Array with email as key, name as value or email as value (without name))
  * `send_at`: date time sting representing the time this email should be sent at (in UTC)
  * `template`:  the name of the element to use as template for the email message. (maximum supported length is 100 chars)
  * `layout`: the name of the layout to be used to wrap email message
