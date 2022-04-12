@@ -22,7 +22,6 @@ class EmailQueue
      * - headers: Key => Value list of extra headers for the email
      * - theme: The View Theme to find the email templates
      * - config : the name of the email config to be used for sending
-     *
      * @return bool
      */
     public static function enqueue($to, array $data, array $options = [])

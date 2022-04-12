@@ -21,7 +21,7 @@ class EmailQueueTable extends Table
     public const MAX_TEMPLATE_LENGTH = 100;
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function initialize(array $config = []): void
     {
@@ -53,7 +53,6 @@ class EmailQueueTable extends Table
      * - layout : the name of the layout to be used to wrap email message
      * - format: Type of template to use (html, text or both)
      * - config : the name of the email config to be used for sending
-     *
      * @throws \Exception any exception raised in transactional callback
      * @throws \LengthException If `template` option length is greater than maximum allowed length
      * @return bool
@@ -118,7 +117,8 @@ class EmailQueueTable extends Table
                     $this->aliasField('locked') => false,
                 ])
                 ->limit($size)
-                ->order([$this->aliasField('created') => 'ASC']);
+                ->order([$this->aliasField('created') => 'ASC'])
+                ->all();
 
             $emails
                 ->extract('id')
@@ -138,7 +138,6 @@ class EmailQueueTable extends Table
      * Releases locks for all emails in $ids.
      *
      * @param array|\Traversable $ids The email ids to unlock
-     *
      * @return void
      */
     public function releaseLocks($ids): void

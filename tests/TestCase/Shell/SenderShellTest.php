@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace EmailQueue\Test\Shell;
+namespace EmailQueue\Test\TestCase\Shell;
 
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOutput;
@@ -12,6 +12,7 @@ use Cake\TestSuite\ConsoleIntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 use EmailQueue\Model\Table\EmailQueueTable;
 use EmailQueue\Shell\SenderShell;
+use EmailQueue\Test\Fixture\EmailQueueFixture;
 use TestApp\Mailer\TestMailer;
 
 /**
@@ -42,7 +43,7 @@ class SenderShellTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'plugin.EmailQueue.EmailQueue',
+        EmailQueueFixture::class,
     ];
 
     /**
@@ -100,7 +101,8 @@ class SenderShellTest extends TestCase
 
         $emails = $this->EmailQueue
             ->find()
-            ->where(['id IN' => ['email-1', 'email-2', 'email-3']])
+            ->where(['id IN' => [1, 2, 3]])
+            ->all()
             ->toList();
 
         $this->assertEquals(1, $emails[0]['send_tries']);
@@ -140,7 +142,8 @@ class SenderShellTest extends TestCase
 
         $emails = $this->EmailQueue
             ->find()
-            ->where(['id IN' => ['email-1', 'email-2', 'email-3']])
+            ->where(['id IN' => [1, 2, 3]])
+            ->all()
             ->toList();
 
         $this->assertEquals(2, $emails[0]['send_tries']);

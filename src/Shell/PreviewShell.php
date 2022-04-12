@@ -14,7 +14,7 @@ class PreviewShell extends Shell
     /**
      * Main
      *
-     * @return bool|int|null|void
+     * @return void
      */
     public function main()
     {

@@ -7,6 +7,7 @@ use Cake\Mailer\Mailer;
 
 /**
  * Fake TestMailer to test transport without rendering
+ *
  * @package EmailQueue\Test\TestCase\Mailer
  */
 class TestMailer extends Mailer

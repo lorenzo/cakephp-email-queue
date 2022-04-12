@@ -4,6 +4,7 @@ declare(strict_types=1);
 use Cake\Core\Configure;
 use Cake\Mailer\Mailer;
 use Cake\Mailer\TransportFactory;
+use Migrations\TestSuite\Migrator;
 
 $findRoot = function ($root) {
     do {
@@ -25,3 +26,6 @@ require $root . '/vendor/cakephp/cakephp/tests/bootstrap.php';
 Configure::write('EmailQueue.serialization_type', 'email_queue.json');
 TransportFactory::setConfig(['default' => ['className' => 'Debug', 'additionalParameters' => true]]);
 Mailer::setConfig(['default' => ['transport' => 'default', 'from' => 'foo@bar.com']]);
+
+$source = '..' . DS . '..' . DS . '..' . DS . '..' . DS . '..' . DS . '..' . DS . 'config' . DS . 'Migrations';
+(new Migrator())->run(compact('source'));
