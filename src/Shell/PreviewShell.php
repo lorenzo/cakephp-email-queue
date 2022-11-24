@@ -26,7 +26,7 @@ class PreviewShell extends Shell
         }
 
         $emailQueue = TableRegistry::getTableLocator()->get('EmailQueue', ['className' => EmailQueueTable::class]);
-        $emails = $emailQueue->find()->where($conditions)->toList();
+        $emails = $emailQueue->find()->where($conditions)->all()->toList();
 
         if (!$emails) {
             $this->out('No emails found');
