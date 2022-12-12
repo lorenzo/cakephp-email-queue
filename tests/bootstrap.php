@@ -27,5 +27,10 @@ Configure::write('EmailQueue.serialization_type', 'email_queue.json');
 TransportFactory::setConfig(['default' => ['className' => 'Debug', 'additionalParameters' => true]]);
 Mailer::setConfig(['default' => ['transport' => 'default', 'from' => 'foo@bar.com']]);
 
+$cakeVendorPath = $root . '/vendor/cakephp/cakephp';
+if (! file_exists($cakeVendorPath . '/tests/test_app/config')) {
+    mkdir($cakeVendorPath . '/tests/test_app/config', 0744, true);
+}
+
 $source = '..' . DS . '..' . DS . '..' . DS . '..' . DS . '..' . DS . '..' . DS . 'config' . DS . 'Migrations';
 (new Migrator())->run(compact('source'));
