@@ -5,10 +5,10 @@ namespace EmailQueue\Test\TestCase\Shell;
 
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOutput;
+use Cake\Console\TestSuite\ConsoleIntegrationTestTrait;
 use Cake\Mailer\Transport\MailTransport;
 use Cake\Network\Exception\SocketException;
 use Cake\ORM\TableRegistry;
-use Cake\TestSuite\ConsoleIntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 use EmailQueue\Model\Table\EmailQueueTable;
 use EmailQueue\Shell\SenderShell;

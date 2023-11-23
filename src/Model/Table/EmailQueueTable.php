@@ -187,13 +187,12 @@ class EmailQueueTable extends Table
     }
 
     /**
-     * Sets the column type for template_vars and headers to json.
-     *
-     * @param \Cake\Database\Schema\TableSchemaInterface $schema The table description
-     * @return \Cake\Database\Schema\TableSchema
+     * @inheritDoc
      */
-    protected function _initializeSchema(TableSchemaInterface $schema): TableSchemaInterface
+    public function getSchema(): TableSchemaInterface
     {
+        $schema = parent::getSchema();
+
         $type = Configure::read('EmailQueue.serialization_type') ?: 'email_queue.serialize';
         $schema->setColumnType('template_vars', $type);
         $schema->setColumnType('headers', $type);
